@@ -1,8 +1,10 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../data/model/place.dart';
+import '../bloc/place_bloc.dart';
 
 class PlaceItem extends StatelessWidget {
   const PlaceItem({Key? key, required this.place}) : super(key: key);

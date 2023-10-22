@@ -5,9 +5,19 @@ import '../bloc/place_bloc.dart';
 import '../widgets/place_item.dart';
 import 'add_new_plase_page.dart';
 
-class FavoritePlacesPage extends StatelessWidget {
+class FavoritePlacesPage extends StatefulWidget {
   const FavoritePlacesPage({Key? key}) : super(key: key);
 
+  @override
+  State<FavoritePlacesPage> createState() => _FavoritePlacesPageState();
+}
+
+class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<PlaceBloc>().add(GetPlaceEvent());
+  }
   @override
   Widget build(BuildContext context) {
     return Scaffold(
