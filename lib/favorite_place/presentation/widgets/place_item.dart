@@ -17,7 +17,6 @@ class PlaceItem extends StatelessWidget {
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
-          mainAxisAlignment: MainAxisAlignment.start,
           children: [
             CircleAvatar(
               radius: 35.0,
@@ -31,6 +30,7 @@ class PlaceItem extends StatelessWidget {
             Padding(
               padding: EdgeInsets.all(8.0),
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
                     place.title,
