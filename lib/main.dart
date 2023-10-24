@@ -1,17 +1,22 @@
 
-import 'package:favorite_places_app/user/presentation/bloc/user_bloc.dart';
+import 'package:favorite_places_app/user/data/datasorce/authentication_remote_ds/authentication.dart';
+import 'package:favorite_places_app/user/presentation/bloc/authentication_bloc.dart';
+import 'package:favorite_places_app/user/presentation/pages/login_page.dart';
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-
 import 'favorite_place/presentation/bloc/place_bloc.dart';
 import 'favorite_place/presentation/pages/favorite_places_page.dart';
-import 'favorite_place/presentation/pages/test.dart';
-import 'user/presentation/pages/sign_up_page.dart';
-void main() {
+
+void main() async{
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp();
+  print(Firebase.apps.first.name);
+  AuthenticationImp().signOut();
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider<UserBloc>(create: (context) => UserBloc()),
+        BlocProvider<AuthenticationBloc>(create: (context) => AuthenticationBloc(AuthenticationImp())),
         BlocProvider<PlaceBloc>(create: (context) => PlaceBloc()),
       ],
       child: MyApp(),
@@ -46,7 +51,7 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: FavoritePlacesPage(),
+      home: LoginPage(),
     );
   }
 }

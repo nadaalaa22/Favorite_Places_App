@@ -1,11 +1,6 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../../data/model/place.dart';
-import '../bloc/place_bloc.dart';
-
 class PlaceItem extends StatelessWidget {
   const PlaceItem({Key? key, required this.place}) : super(key: key);
   final  Place place ;
@@ -13,7 +8,7 @@ class PlaceItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return  Padding(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         scrollDirection: Axis.horizontal,
         child: Row(
@@ -24,11 +19,11 @@ class PlaceItem extends StatelessWidget {
                 File(place.image)
               ),
             ),
-            SizedBox(
+            const SizedBox(
               height: 5.0,
             ),
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
@@ -36,7 +31,7 @@ class PlaceItem extends StatelessWidget {
                     place.title,
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
                     ),
@@ -45,7 +40,7 @@ class PlaceItem extends StatelessWidget {
                     '${place.placeMarks[0]}',
                     maxLines: 2,
                     overflow: TextOverflow.ellipsis,
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 20.0,
                     ),

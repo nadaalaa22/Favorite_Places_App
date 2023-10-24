@@ -47,7 +47,7 @@ class _AddNewPlaceState extends State<AddNewPlace> {
       backgroundColor: Colors.grey[850],
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text(
+        title: const Text(
           'Add New Place',
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
@@ -77,7 +77,7 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                               Colors.white), // Set focused border color to white
                     ),
                   ),
-                  style: TextStyle(color: Colors.white),
+                  style: const TextStyle(color: Colors.white),
                   validator: (text) {
                     if (text!.isEmpty) {
                       return 'field can not be null';
@@ -101,11 +101,11 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                         setState(() {
                           isImage = true ;
                         });
-                      }, child: Text("Take a photo",style: TextStyle(fontSize: 24),)),
+                      }, child: const Text("Take a photo",style: TextStyle(fontSize: 24),)),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.all(16.0),
+              const Padding(
+                padding: EdgeInsets.all(16.0),
                 child: Image(
                     image: NetworkImage(
                         'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ1DuYcvCkjQeDtqHzsS-rQpmLC2deO0BI2g&usqp=CAU')),
@@ -125,7 +125,7 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.pinkAccent, // Text color
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
                         Icon(Icons.location_on),
                         // Icon for "Get Current Location"
@@ -137,14 +137,14 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                   ),
                   TextButton(
                     onPressed: () async {
-                    LatLng latling =  await Navigator.push(context, MaterialPageRoute(builder: (_)=> MapSample()));
+                    LatLng latling =  await Navigator.push(context, MaterialPageRoute(builder: (_)=> const MapSample()));
                     placemarks = await placemarkFromCoordinates(latling.latitude,latling.longitude);
                     print(placemarks);
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.pinkAccent, // Text color
                     ),
-                    child: Row(
+                    child: const Row(
                       children: [
                         Icon(Icons.map),
                         SizedBox(width: 8),
@@ -154,7 +154,7 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                   ),
                 ],
               ),
-              SizedBox(
+              const SizedBox(
                 height: 15,
               ),
               ElevatedButton(
@@ -169,12 +169,12 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                      context.read<PlaceBloc>().add(SetPlaceEvent(place: place)) ;
                    }
                 },
-                child: Text(
-                  '+ Add Place',
-                  style: TextStyle(fontSize: 18),
-                ),
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.grey[700],
+                ),
+                child: const Text(
+                  '+ Add Place',
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ],
