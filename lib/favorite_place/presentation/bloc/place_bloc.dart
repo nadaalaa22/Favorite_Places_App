@@ -10,18 +10,19 @@ part 'place_event.dart';
 part 'place_state.dart';
 
 class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
-  PlaceBloc() : super(PlaceInitial()) {
+  final FavoritePlaceModel favoritePlaceModel ;
+  PlaceBloc(this.favoritePlaceModel) : super(PlaceInitial()) {
     on<PlaceEvent>((event, emit) async {
       if (event is SetPlaceEvent) {
         emit(PlaceLoadingState());
-        await FavoritePlaceImp().setFavPlace(event.place);
-        List<Place> places = await FavoritePlaceImp().getFavPlaces() ;
+        await favoritePlaceModel.setFavPlace(event.place);
+        List<Place> places = await favoritePlaceModel.getFavPlaces() ;
         emit(PlaceLoadedState(places: places)) ;
       }
 
       else if (event is GetPlaceEvent) {
         emit(PlaceLoadingState());
-        List<Place> places = await FavoritePlaceImp().getFavPlaces() ;
+        List<Place> places = await favoritePlaceModel.getFavPlaces() ;
         emit(PlaceLoadedState(places: places)) ;
 
       }

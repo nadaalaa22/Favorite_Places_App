@@ -1,4 +1,5 @@
 
+import 'package:favorite_places_app/favorite_place/data/datasource/place_local_datasource.dart';
 import 'package:favorite_places_app/user/data/datasorce/authentication_remote_ds/authentication.dart';
 import 'package:favorite_places_app/user/presentation/bloc/authentication_bloc.dart';
 import 'package:favorite_places_app/user/presentation/pages/login_page.dart';
@@ -17,7 +18,7 @@ void main() async{
     MultiBlocProvider(
       providers: [
         BlocProvider<AuthenticationBloc>(create: (context) => AuthenticationBloc(AuthenticationImp())),
-        BlocProvider<PlaceBloc>(create: (context) => PlaceBloc()),
+        BlocProvider<PlaceBloc>(create: (context) => PlaceBloc(FavoritePlaceImp())),
       ],
       child: MyApp(),
     ),
