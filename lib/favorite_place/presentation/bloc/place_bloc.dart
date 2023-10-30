@@ -1,7 +1,7 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
-import 'package:favorite_places_app/favorite_place/data/datasource/place_local_datasource.dart';
+import 'package:favorite_places_app/favorite_place/data/datasource/place_remote_datasource.dart';
 import 'package:meta/meta.dart';
 
 import '../../data/model/place.dart';
@@ -15,13 +15,28 @@ class PlaceBloc extends Bloc<PlaceEvent, PlaceState> {
     on<PlaceEvent>((event, emit) async {
       if (event is SetPlaceEvent) {
         emit(PlaceLoadingState());
-        await favoritePlaceModel.setFavPlace(event.place);
+        await favoritePlaceModel.addFavPlace(event.place);
         List<Place> places = await favoritePlaceModel.getFavPlaces() ;
         emit(PlaceLoadedState(places: places)) ;
       }
 
       else if (event is GetPlaceEvent) {
         emit(PlaceLoadingState());
+        List<Place> places = await favoritePlaceModel.getFavPlaces() ;
+        emit(PlaceLoadedState(places: places)) ;
+
+      }
+
+      else if (event is DeletePlaceEvent) {
+        emit(PlaceLoadingState());
+         await favoritePlaceModel.deleteFavPlace(event.place.id) ;
+        List<Place> places = await favoritePlaceModel.getFavPlaces() ;
+        emit(PlaceLoadedState(places: places)) ;
+
+      }
+      else if (event is UpdatePlaceEvent) {
+        emit(PlaceLoadingState());
+        await favoritePlaceModel.updateFavPlace(event.place) ;
         List<Place> places = await favoritePlaceModel.getFavPlaces() ;
         emit(PlaceLoadedState(places: places)) ;
 

@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../bloc/place_bloc.dart';
 import '../widgets/place_item.dart';
-import 'add_new_plase_page.dart';
+import 'add_new_place_page.dart';
 
 class FavoritePlacesPage extends StatefulWidget {
   const FavoritePlacesPage({Key? key}) : super(key: key);
@@ -24,7 +24,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
       backgroundColor: Colors.grey[850],
       appBar: AppBar(
         backgroundColor: Colors.black,
-        title: Text(
+        title: const Text(
           'Favorite Places',
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
@@ -34,7 +34,7 @@ class _FavoritePlacesPageState extends State<FavoritePlacesPage> {
         builder: (context, state) {
           if (state is PlaceLoadingState)
             {
-              return const CircularProgressIndicator();
+              return const Center(child: CircularProgressIndicator());
             }
           if (state is PlaceLoadedState) {
             return ListView.builder(

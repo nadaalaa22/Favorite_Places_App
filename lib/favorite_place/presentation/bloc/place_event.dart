@@ -11,3 +11,16 @@ class SetPlaceEvent extends PlaceEvent {
 
 class GetPlaceEvent extends PlaceEvent {}
 
+class UpdatePlaceEvent extends PlaceEvent {
+  final Place place ;
+
+  UpdatePlaceEvent({required this.place});
+}
+class DeletePlaceEvent extends PlaceEvent {
+  final Place place ;
+
+  DeletePlaceEvent({required this.place});
+}
+
+
+

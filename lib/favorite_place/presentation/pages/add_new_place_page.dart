@@ -1,48 +1,64 @@
 import 'dart:io';
-import 'package:favorite_places_app/favorite_place/presentation/pages/test.dart';
+import 'package:favorite_places_app/favorite_place/presentation/pages/map_page.dart';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_static_maps_controller/google_static_maps_controller.dart' as gmaps;
+import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
 import '../../data/model/place.dart';
 import '../bloc/place_bloc.dart';
 
 class AddNewPlace extends StatefulWidget {
-  AddNewPlace({Key? key,})
-      : super(key: key);
+  const AddNewPlace({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<AddNewPlace> createState() => _AddNewPlaceState();
 }
+
 class _AddNewPlaceState extends State<AddNewPlace> {
+
   var title = TextEditingController();
-  String  serviceEnabled =  '' ;
-  bool isImage = false ;
-  File? imageFile ;
+  bool isImage = false;
+  File? imageFile;
   GlobalKey<FormState> keyTitle = GlobalKey();
-  late List<Placemark> placemarks ;
+  late Placemark place;
+   LatLng? latLng ;
 
-
-  Future<Position?> determinePosition()
-  async {
+  Future<Position?> determinePosition() async {
     await Geolocator.requestPermission();
-    final  permission = await Geolocator.checkPermission();
-    if (permission == LocationPermission.always || permission == LocationPermission.whileInUse) {
-      return  Geolocator.getCurrentPosition() ;
+    final permission = await Geolocator.checkPermission();
+    if (permission == LocationPermission.always ||
+        permission == LocationPermission.whileInUse) {
+      return Geolocator.getCurrentPosition();
     }
-    return null ;
+    return null;
   }
+
   Future<File?> getImage(ImageSource source) async {
-    XFile ? xFile = await ImagePicker().pickImage(source: source) ;
-    if (xFile != null){
+    XFile? xFile = await ImagePicker().pickImage(source: source);
+    if (xFile != null) {
       return File(xFile.path);
     }
   }
+  late ImageProvider image ;
 
   @override
   Widget build(BuildContext context) {
+    if (latLng != null) {
+      var controller = gmaps.StaticMapController(
+        googleApiKey: "AIzaSyDi-bSYjtEknQ7O7V05Hg7oWRLWPnU0rXU",
+        width: 400,
+        height: 400,
+        zoom: 10,
+        center: gmaps.Location(latLng!.latitude, latLng!.longitude),
+      );
+      image = controller.image;
+    }
     return Scaffold(
       backgroundColor: Colors.grey[850],
       appBar: AppBar(
@@ -52,7 +68,6 @@ class _AddNewPlaceState extends State<AddNewPlace> {
           style: TextStyle(
               fontSize: 24, fontWeight: FontWeight.bold, color: Colors.white),
         ),
-
       ),
       body: SingleChildScrollView(
         child: Form(
@@ -73,8 +88,8 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                     ),
                     focusedBorder: OutlineInputBorder(
                       borderSide: BorderSide(
-                          color:
-                              Colors.white), // Set focused border color to white
+                          color: Colors
+                              .white), // Set focused border color to white
                     ),
                   ),
                   style: const TextStyle(color: Colors.white),
@@ -90,37 +105,47 @@ class _AddNewPlaceState extends State<AddNewPlace> {
               Padding(
                 padding: const EdgeInsets.all(16.0),
                 child: Container(
-                  child: isImage?
-                      Image.file(File(imageFile!.path))
-                   : TextButton(
-                      onPressed: () async {
-                       await getImage(ImageSource.camera).then((value) =>setState(() {
-                          imageFile = value ;
-                        })
-                        ) ;
-                        setState(() {
-                          isImage = true ;
-                        });
-                      }, child: const Text("Take a photo",style: TextStyle(fontSize: 24),)),
+                  child: isImage
+                      ? Image.file(File(imageFile!.path))
+                      : TextButton(
+                          onPressed: () async {
+                            await getImage(ImageSource.camera)
+                                .then((value) => setState(() {
+                                      imageFile = value;
+                                    }));
+                            setState(() {
+                              isImage = true;
+                            });
+                          },
+                          child: const Text(
+                            "Take a photo",
+                            style: TextStyle(fontSize: 24),
+                          )),
                 ),
               ),
-              const Padding(
-                padding: EdgeInsets.all(16.0),
-                child: Image(
-                    image: NetworkImage(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ1DuYcvCkjQeDtqHzsS-rQpmLC2deO0BI2g&usqp=CAU')),
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child:  SizedBox(
+                  width: 400,
+                    height: 200,
+                    child: Image(image: latLng!=null? image :const NetworkImage(
+                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ1DuYcvCkjQeDtqHzsS-rQpmLC2deO0BI2g&usqp=CAU')
+                 , fit: BoxFit.cover)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   TextButton(
                     onPressed: () async {
-                      Position? position =  await determinePosition() ;
+                      Position? position = await determinePosition();
+                      latLng = LatLng(position!.latitude, position!.longitude);
+                      List<Placemark> placemarks =
+                          await placemarkFromCoordinates(
+                              position!.latitude, position!.longitude);
+
                       setState(() {
-                        serviceEnabled=position.toString();
+                        place = placemarks.first;
                       });
-                       placemarks = await placemarkFromCoordinates(position!.latitude,position!.longitude);
-                      print(placemarks);
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.pinkAccent, // Text color
@@ -137,9 +162,18 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                   ),
                   TextButton(
                     onPressed: () async {
-                    LatLng latling =  await Navigator.push(context, MaterialPageRoute(builder: (_)=> const MapSample()));
-                    placemarks = await placemarkFromCoordinates(latling.latitude,latling.longitude);
-                    print(placemarks);
+                      Position? position = await determinePosition();
+                     final latLngOfCurrentLocation = LatLng(position!.latitude, position!.longitude);
+                     latLng  = await Navigator.push(context,
+                          MaterialPageRoute(builder: (_) =>  MapSample(currentLocation: latLngOfCurrentLocation,)));
+                     final places =
+                     await placemarkFromCoordinates(latLng!.latitude, latLng!.longitude);
+                     if (places.isNotEmpty) {
+                       setState(() {
+                         place = places.first;
+                       });
+
+                     }
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.pinkAccent, // Text color
@@ -159,15 +193,18 @@ class _AddNewPlaceState extends State<AddNewPlace> {
               ),
               ElevatedButton(
                 onPressed: () {
-                 if(keyTitle.currentState!.validate())
-                   {
-                     Place place =Place(
-                       title: title.text,
-                       image: imageFile!.path,
-                       placeMarks: placemarks ,
-                     );
-                     context.read<PlaceBloc>().add(SetPlaceEvent(place: place)) ;
-                   }
+                  if (keyTitle.currentState!.validate()) {
+                    Place placeData = Place(
+                        id: '',
+                        userId: '',
+                        name: title.text,
+                        description: '',
+                        imageUrl: imageFile!.path,
+                        address: '${place.country} ${place.street}',
+                        latitude: latLng!.latitude,
+                        longitude: latLng!.longitude) ;
+                    context.read<PlaceBloc>().add(SetPlaceEvent(place: placeData)) ;
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.grey[700],

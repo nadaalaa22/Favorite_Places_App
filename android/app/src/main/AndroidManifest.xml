@@ -7,7 +7,7 @@
         android:label="favorite_places_app">
         <meta-data
             android:name="com.google.android.geo.API_KEY"
-            android:value="AIzaSyBjfgPquin69ysKgM3xpEvg4mtue1-e2Yg" />
+            android:value="AIzaSyDi-bSYjtEknQ7O7V05Hg7oWRLWPnU0rXU" />
         <activity
             android:name=".MainActivity"
             android:configChanges="orientation|keyboardHidden|keyboard|screenSize|smallestScreenSize|locale|layoutDirection|fontScale|screenLayout|density|uiMode"
