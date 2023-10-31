@@ -24,3 +24,4 @@ class DeletePlaceEvent extends PlaceEvent {
 
 
 
+

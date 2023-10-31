@@ -1,10 +1,12 @@
 
 import 'package:favorite_places_app/favorite_place/data/datasource/place_remote_datasource.dart';
 import 'package:favorite_places_app/favorite_place/data/model/place.dart';
+import 'package:favorite_places_app/stream.dart';
 import 'package:favorite_places_app/user/data/datasorce/authentication_remote_ds/authentication.dart';
 import 'package:favorite_places_app/user/presentation/bloc/authentication_bloc.dart';
 import 'package:favorite_places_app/user/presentation/pages/login_page.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'favorite_place/data/datasource/remote_db_helper.dart';
@@ -12,18 +14,23 @@ import 'favorite_place/presentation/bloc/place_bloc.dart';
 import 'favorite_place/presentation/pages/add_new_place_page.dart';
 import 'favorite_place/presentation/pages/favorite_places_page.dart';
 
-
+@pragma('vm:entry_point')
+Future<void> onBackgroundMessage (RemoteMessage message) async {
+  print('Notification Received While App Is In The Background');
+}
 void main() async{
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  Place place = Place
-    (id:'1', userId: '1', name: 'NADA', description: 'hh', imageUrl: 'j', address: '', latitude: 20.0, longitude: 20.0);
-  try{
-  List<Place>  places =   await FavoritePlaceImp(RemoteDBHelperImp()).getFavPlaces();
-  print(places);
-  }catch(e){
-    print(e.toString());
-  }
+  FirebaseMessaging.instance.requestPermission();
+  FirebaseMessaging.instance.getToken().then((value) => print(value));
+  FirebaseMessaging.instance.subscribeToTopic('topic');
+  FirebaseMessaging.onMessage.listen(
+      (event) => print('Notification Received While App Is In The Foreground'));
+  FirebaseMessaging.onMessageOpenedApp
+      .listen((event)=>print('Notification Tapped'));
+
+
+  FirebaseMessaging.onBackgroundMessage(onBackgroundMessage);
 
   runApp(
     MultiBlocProvider(

@@ -48,6 +48,9 @@ dependencies:
   cloud_firestore: ^4.12.0
   google_static_maps_controller: ^1.0.0
   flutter_polyline_points: ^2.0.0
+  firebase_storage: ^11.4.0
+  firebase_messaging: ^14.7.2
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

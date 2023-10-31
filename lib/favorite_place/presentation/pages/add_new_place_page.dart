@@ -1,13 +1,17 @@
 import 'dart:io';
-import 'package:favorite_places_app/favorite_place/presentation/pages/map_page.dart';
 
+import 'package:favorite_places_app/favorite_place/data/datasource/image_picker_helper.dart';
+import 'package:favorite_places_app/favorite_place/data/datasource/storage_helper.dart';
+import 'package:favorite_places_app/favorite_place/presentation/pages/map_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:geocoding/geocoding.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:google_static_maps_controller/google_static_maps_controller.dart' as gmaps;
 import 'package:geolocator/geolocator.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:google_static_maps_controller/google_static_maps_controller.dart'
+    as gmaps;
 import 'package:image_picker/image_picker.dart';
+
 import '../../data/model/place.dart';
 import '../bloc/place_bloc.dart';
 
@@ -21,13 +25,12 @@ class AddNewPlace extends StatefulWidget {
 }
 
 class _AddNewPlaceState extends State<AddNewPlace> {
-
   var title = TextEditingController();
   bool isImage = false;
   File? imageFile;
   GlobalKey<FormState> keyTitle = GlobalKey();
   late Placemark place;
-   LatLng? latLng ;
+  LatLng? latLng;
 
   Future<Position?> determinePosition() async {
     await Geolocator.requestPermission();
@@ -45,7 +48,8 @@ class _AddNewPlaceState extends State<AddNewPlace> {
       return File(xFile.path);
     }
   }
-  late ImageProvider image ;
+
+  late ImageProvider image;
 
   @override
   Widget build(BuildContext context) {
@@ -109,10 +113,13 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                       ? Image.file(File(imageFile!.path))
                       : TextButton(
                           onPressed: () async {
-                            await getImage(ImageSource.camera)
-                                .then((value) => setState(() {
-                                      imageFile = value;
-                                    }));
+                            await ImagePickerHelperImp().pickImageFile().then(
+                                (value) => setState(() => imageFile = value));
+                            if (imageFile != null) {
+                              StorageHelperImp()
+                                  .uploadImageFromFile(imageFile!);
+                            }
+
                             setState(() {
                               isImage = true;
                             });
@@ -125,12 +132,15 @@ class _AddNewPlaceState extends State<AddNewPlace> {
               ),
               Padding(
                 padding: const EdgeInsets.all(16.0),
-                child:  SizedBox(
-                  width: 400,
+                child: SizedBox(
+                    width: 400,
                     height: 200,
-                    child: Image(image: latLng!=null? image :const NetworkImage(
-                        'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ1DuYcvCkjQeDtqHzsS-rQpmLC2deO0BI2g&usqp=CAU')
-                 , fit: BoxFit.cover)),
+                    child: Image(
+                        image: latLng != null
+                            ? image
+                            : const NetworkImage(
+                                'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSQ1DuYcvCkjQeDtqHzsS-rQpmLC2deO0BI2g&usqp=CAU'),
+                        fit: BoxFit.cover)),
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -163,17 +173,21 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                   TextButton(
                     onPressed: () async {
                       Position? position = await determinePosition();
-                     final latLngOfCurrentLocation = LatLng(position!.latitude, position!.longitude);
-                     latLng  = await Navigator.push(context,
-                          MaterialPageRoute(builder: (_) =>  MapSample(currentLocation: latLngOfCurrentLocation,)));
-                     final places =
-                     await placemarkFromCoordinates(latLng!.latitude, latLng!.longitude);
-                     if (places.isNotEmpty) {
-                       setState(() {
-                         place = places.first;
-                       });
-
-                     }
+                      final latLngOfCurrentLocation =
+                          LatLng(position!.latitude, position!.longitude);
+                      latLng = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (_) => MapSample(
+                                    currentLocation: latLngOfCurrentLocation,
+                                  )));
+                      final places = await placemarkFromCoordinates(
+                          latLng!.latitude, latLng!.longitude);
+                      if (places.isNotEmpty) {
+                        setState(() {
+                          place = places.first;
+                        });
+                      }
                     },
                     style: TextButton.styleFrom(
                       foregroundColor: Colors.pinkAccent, // Text color
@@ -202,8 +216,10 @@ class _AddNewPlaceState extends State<AddNewPlace> {
                         imageUrl: imageFile!.path,
                         address: '${place.country} ${place.street}',
                         latitude: latLng!.latitude,
-                        longitude: latLng!.longitude) ;
-                    context.read<PlaceBloc>().add(SetPlaceEvent(place: placeData)) ;
+                        longitude: latLng!.longitude);
+                    context
+                        .read<PlaceBloc>()
+                        .add(SetPlaceEvent(place: placeData));
                   }
                 },
                 style: ElevatedButton.styleFrom(
